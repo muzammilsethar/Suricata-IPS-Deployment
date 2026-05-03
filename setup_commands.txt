@@ -1,0 +1,36 @@
+# ==========================================================
+# PROJECT: Suricata IDS/IPS Deployment & Verification
+# AUTHOR: Muzammil
+# DESCRIPTION: Sequence of commands used during the lab
+# ==========================================================
+
+# --- 1. SYSTEM PREPARATION ---
+# Updating repositories and verifying Suricata installation
+sudo apt update
+suricata --build-info
+
+# --- 2. RULES CONFIGURATION ---
+# Creating and editing local rules for traffic filtering
+sudo nano /etc/suricata/rules/local.rules
+# Rules added:
+# alert tcp any any -> any any (msg:"YouTube Access Detected"; content:"youtube.com"; sid:1000002;)
+# drop tcp any any -> any any (msg:"Facebook Blocked"; content:"facebook.com"; sid:1000010;)
+
+# --- 3. CONFIGURATION VALIDATION ---
+# Testing the YAML file for syntax and path errors
+sudo suricata -T -c /etc/suricata/suricata.yaml
+
+# --- 4. IPS EXECUTION ---
+# Running Suricata on the primary network interface (eth0)
+ip a
+sudo suricata -c /etc/suricata/suricata.yaml -i eth0
+
+# --- 5. LOG MONITORING ---
+# Monitoring live alerts and blocked traffic
+sudo tail -f /var/log/suricata/fast.log
+
+# --- 6. ZEEK INSTALLATION ATTEMPT ---
+# Attempting manual installation via .deb package
+ls -l zeek_5.1.1-0kali3_amd64.deb
+sudo dpkg -i zeek_5.1.1-0kali3_amd64.deb
+# Note: Dependency error encountered due to libc6 version mismatch
